@@ -25,5 +25,19 @@
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "version": "1.0.0",
+  "description": "Introducing Jukebox Pro, the successor to Jukebox! Users will now need to make an account\r and log in before they are able to manage their playlists.",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarkHines/jukebox-pro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarkHines/jukebox-pro/issues"
+  },
+  "homepage": "https://github.com/MarkHines/jukebox-pro#readme"
 }

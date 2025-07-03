@@ -2,34 +2,37 @@ import express from "express";
 const router = express.Router();
 export default router;
 
+import requireUser from "#middleware/requireUser";
+import requireBody from "#middleware/requireBody";
 import {
   createPlaylist,
   getPlaylistById,
-  getPlaylists,
+  getPlaylistByUserId,
 } from "#db/queries/playlists";
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
 
-router
-  .route("/")
-  .get(async (req, res) => {
-    const playlists = await getPlaylists();
-    res.send(playlists);
+router.use(requireUser)
+
+router.get(`/`, async (req, res) => {
+    //console.log(req.user)
+    const playlist = await getPlaylistByUserId(req.user.id);
+    //console.log(playlist)
+    res.send(playlist);
   })
-  .post(async (req, res) => {
-    if (!req.body) return res.status(400).send("Request body is required.");
-
-    const { name, description } = req.body;
-    if (!name || !description)
-      return res.status(400).send("Request body requires: name, description");
-
-    const playlist = await createPlaylist(name, description);
+router.post(`/`, 
+  requireBody(["name", "description"]),
+  async (req, res) => {
+    const { name, description } = req.body
+    const playlist = await createPlaylist(name, description, req.user.id);
     res.status(201).send(playlist);
   });
 
 router.param("id", async (req, res, next, id) => {
   const playlist = await getPlaylistById(id);
-  if (!playlist) return res.status(404).send("Playlist not found.");
+  if (!playlist) return res.status(401).send("Playlist not found.");
+
+  if(playlist.user_id !== req.user.id) return res.status(403).send(`YOU DON"T OWN THIS PLAYLIST`)
 
   req.playlist = playlist;
   next();
